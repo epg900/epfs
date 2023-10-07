@@ -5,10 +5,10 @@ from .models import Fileupload
 from .forms import Fileform
 from django.contrib.staticfiles import finders
 import random,pyqrcode,os
-# Create your views here.
+
 
 def index(request):
-    return render(request,"sharefile.html")
+    return render(request,"epfs/sharefile.html")
 
 def sharefile(request):
     if request.method == 'POST':
@@ -19,7 +19,7 @@ def sharefile(request):
             keytxt=''.join([random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for i in range(10)])
             obj.keystring=keytxt
             obj.save()
-            keystring='https://epfs.eu.pythonanywhere.com/epfs/view/'+keytxt
+            keystring=request.META['HTTP_HOST'] + '/epfs/view/' + keytxt
             qrcode=pyqrcode.create(keystring)
             qrcode.svg(finders.find("qrcode.svg"),scale=8)
             return HttpResponse("<!DOCTYPE htm><html><head><title>epfs file link</title><meta name='viewport' content='width=device-width, initial-scale=1.0' ></head><body><center><h5>{}<h5><img src='/static/qrcode.svg'/></center></body></html>".format(keystring))
@@ -35,9 +35,10 @@ def downloadfile(request,link):
     return FileResponse(open(filepath,'rb'))
 
 def removeallfile(request,txt):
-    if txt=='ea!^433' :
-        os.system("rm -rf /home/epfs/upload")
-    return redirect('/')
+    path=os.path.join(settings.BASE_DIR,'upload')
+    if txt=='ea!^433' :        
+        os.system("rm -rf {}".format(path))
+    return redirect('/epfs')
 
 
 
