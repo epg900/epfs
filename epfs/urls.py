@@ -18,8 +18,8 @@ from django.urls import path,include
 from . import views
 
 urlpatterns = [
-    path('epfs/',views.index ),
-    path('epfs/sharefile/',views.sharefile),
-    path('epfs/view/<str:link>',views.downloadfile),
-    path('epfs/rm/<str:txt>',views.removeallfile),
+    path('',views.index ),
+    path('sharefile/',views.sharefile),
+    path('view/<str:link>',views.downloadfile),
+    path('rm/<str:txt>',views.removeallfile),
 ]
