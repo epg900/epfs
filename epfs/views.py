@@ -3,8 +3,8 @@ from django.http import FileResponse,HttpResponse
 from django.conf import settings
 from .models import Fileupload
 from .forms import Fileform
-from django.contrib.staticfiles import finders
-import random,pyqrcode,os
+#from django.contrib.staticfiles import finders
+import random,pyqrcode,os,base64
 
 
 def index(request):
@@ -21,11 +21,13 @@ def sharefile(request):
             obj.save()
             keystring=request.META['HTTP_HOST'] + '/epfs/view/' + keytxt
             qrcode=pyqrcode.create(keystring)
-            qrcode.svg(finders.find("qrcode.svg"),scale=8)
-            return HttpResponse("<!DOCTYPE htm><html><head><title>epfs file link</title><meta name='viewport' content='width=device-width, initial-scale=1.0' ></head><body><center><h5>{}<h5><img src='/static/qrcode.svg'/></center></body></html>".format(keystring))
+            #qrcode.svg(finders.find("qrcode.svg"),scale=8)
+            qrcode.svg("qrcode.svg",scale=8)
+            imgfile=base64.b64encode(open("qrcode.svg","rb").read()).decode('ascii')
+            return HttpResponse("<!DOCTYPE htm><html><head><title>epfs file link</title><meta name='viewport' content='width=device-width, initial-scale=1.0' ></head><body><center><h5>{}<h5><img src='data:image/svg+xml;base64,{}' /></center></body></html>".format(keystring,imgfile))
     else:
         form = Fileform()
-    return render(request, 'sharefile.html', {
+    return render(request, 'epfs/sharefile.html', {
         'form': form
     })
 
@@ -35,9 +37,12 @@ def downloadfile(request,link):
     return FileResponse(open(filepath,'rb'))
 
 def removeallfile(request,txt):
-    path=os.path.join(settings.BASE_DIR,'upload')
-    if txt=='ea!^433' :        
+    path=os.path.join(settings.BASE_DIR)
+    path=os.path.dirname(path)
+    path=os.path.join(path,'upload')
+    if txt=='ea!^433' :
         os.system("rm -rf {}".format(path))
+    #return HttpResponse(path)
     return redirect('/epfs')
 
 
