@@ -10,12 +10,15 @@
   ],
   "share_target":
   {
-    "action": "/sharefile",
+    "action": "/sharefile/",
     "params":
     {
-      "title": "title",
-      "text": "text",
-      "url": "url"
+      "files": [
+          {
+          "name": "Name",
+          "accept": ["*/*","*.*"]
+          }
+          ]
     }
   },
   "start_url": "/",

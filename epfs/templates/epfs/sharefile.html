@@ -16,7 +16,7 @@
 		</div>
 		<form id="fileupload" name="fileupload"  method="POST" enctype="multipart/form-data" action="/epfs/sharefile/" >
 		{% csrf_token %}
-		<input type="file" name="Name" required id="id_Name"  class="form-control form-control-lg my-4" />
+		<input type="file" name="Name" required multiple id="id_Name"  class="form-control form-control-lg my-4"  />
         <button id="btnFetch" type="submit" class='btn btn-primary my-4'>Upload File</button>
         </form>
 
@@ -35,7 +35,7 @@ if ('serviceWorker' in navigator) {
         console.log("Service worker not registered. This happened:", err)
     });
  }
-
+/*
  $(document).ready(function() {
     $("#btnFetch").click(function() {
       // disable button
@@ -46,6 +46,7 @@ if ('serviceWorker' in navigator) {
       );
     });
 });
+*/
 </script>
 
 
