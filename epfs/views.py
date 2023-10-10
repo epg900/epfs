@@ -33,6 +33,8 @@ def sharefile(request):
 
 def downloadfile(request,link):
     obj=Fileupload.objects.filter(keystring=link)
+    if obj.count() == 1 :
+        return FileResponse(open(obj.last().Name.path,'rb'))
     zipobj = ZipFile('download.zip', 'w')
     for i in obj:
         filepath=i.Name.path
