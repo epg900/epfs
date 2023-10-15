@@ -11,6 +11,8 @@
   "share_target":
   {
     "action": "/sharefile/",
+	"method": "POST",
+    "enctype": "multipart/form-data",
     "params":
     {
       "files": [
