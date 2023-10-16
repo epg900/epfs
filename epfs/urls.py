@@ -20,6 +20,8 @@ from . import views
 urlpatterns = [
     path('',views.index ),
     path('sharefile/',views.sharefile),
+    path('signin/',views.signin),
+    path('logout/',views.signout),
     path('view/<str:link>',views.downloadfile),
-    path('rm/<str:txt>',views.removeallfile),
+    path('rm',views.removeallfile),
 ]

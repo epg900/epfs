@@ -6,9 +6,38 @@ from .forms import Fileform
 #from django.contrib.staticfiles import finders
 import random,pyqrcode,os,base64
 from zipfile import ZipFile
+from django.contrib.auth import authenticate, login, logout
 
 def index(request):
-    return render(request,"epfs/sharefile.html")
+    return render(request,"epfs/sharefile.html" , {'var1' : 0 })
+
+def signin(request):
+    #try:
+        if request.method == 'POST':
+            #otp_chk=pyotp.TOTP('H4ZT2CIHQM5XO2VUSZPHWTBHMNQBDY3B')
+            username=request.POST['username']
+            password=request.POST['password']
+            #if username=='admin':
+            #    if otpcode!=otp_chk.now():
+            #        return redirect ('/')
+            user = authenticate(request, username=username, password=password)
+            if user is not None :
+                login(request , user)
+                path=os.path.join(settings.BASE_DIR)
+                path=os.path.dirname(path)
+                path=os.path.join(path,'upload')
+                os.system("rm -rf {}".format(path))
+                return render(request, 'epfs/sharefile.html' , {'var1' : 0 })
+            else:
+                return render(request, 'epfs/sharefile.html' , {'var1' : 0 })
+    #except:
+    #    return render(request, 'erscipcard/login.html')
+    #return render(request, 'erscipcard/login.html')
+
+def signout(request):
+    if not request.user.is_authenticated:
+        logout(request)
+        return render(request, 'epfs/sharefile.html' , {'var1' : 0 })
 
 def sharefile(request):
     if request.method == 'POST':
@@ -20,16 +49,14 @@ def sharefile(request):
             for f in files:
                 file_instance = Fileupload(Name=f,keystring=keytxt)
                 file_instance.save()                
-            keystring=request.META['HTTP_HOST'] + '/epfs/view/' + keytxt
+            keystring=request.scheme + "://" + request.META['HTTP_HOST'] + '/epfs/view/' + keytxt
             qrcode=pyqrcode.create(keystring)
             qrcode.svg("qrcode.svg",scale=8)
             imgfile=base64.b64encode(open("qrcode.svg","rb").read()).decode('ascii')
-            return HttpResponse("<!DOCTYPE htm><html><head><title>epfs file link</title><meta name='viewport' content='width=device-width, initial-scale=1.0' ></head><body><center><h5>{}<h5><img src='data:image/svg+xml;base64,{}' /></center></body></html>".format(keystring,imgfile))
+            return HttpResponse("<!DOCTYPE htm><html><head><title>epfs file link</title><meta name='viewport' content='width=device-width, initial-scale=1.0' ></head><body><center><h4><a href='{}'>{}</a></h4><img src='data:image/svg+xml;base64,{}' /></center></body></html>".format(keystring,keytxt,imgfile))
     else:
         form = Fileform()
-    return render(request, 'epfs/sharefile.html', {
-        'form': form
-    })
+    return render(request, 'epfs/sharefile.html', {'form': form , 'var1' : 0  })
 
 def downloadfile(request,link):
     obj=Fileupload.objects.filter(keystring=link)
@@ -49,13 +76,8 @@ def downloadfile(request,link):
     response['Content-Disposition'] = 'attachment; filename={}.zip'.format(link)
     return response
 
-def removeallfile(request,txt):
-    path=os.path.join(settings.BASE_DIR)
-    path=os.path.dirname(path)
-    path=os.path.join(path,'upload')
-    if txt=='ea!^433' :
-        os.system("rm -rf {}".format(path))
-    return redirect('/epfs')
-
+def removeallfile(request):    
+    return render (request,'epfs/sharefile.html', {'var1' : 1 } )
+    
 
 

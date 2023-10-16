@@ -10,16 +10,29 @@
 </head>
 <body>
 <div class="container">
-	<div class="text-center mx-4">
+	<div class="text-center mx-4">	
+		{% if var1 == 0 %}
 		<div class="title my-4">
 			<h1>Select file to upload</h1>
 		</div>
 		<form id="fileupload" name="fileupload"  method="POST" enctype="multipart/form-data" action="/epfs/sharefile/" >
 		{% csrf_token %}
-		<input type="file" name="Name" required multiple id="id_Name"  class="form-control form-control-lg my-4"  />
-        <button id="btnFetch" type="submit" class='btn btn-primary my-4'>Upload File</button>
+		<input type="file" name="Name" required multiple id="id_Name"  class="form-control form-control-lg my-4"  />		
+        <button id="btnFetch" type="submit" class='btn btn-primary my-4'>Upload File</button>		
         </form>
-
+		{% endif %}
+		{% if var1 == 1 %}
+		<form id="loginform" name="loginform"  method="POST"  action="/epfs/signin/" >
+		{% csrf_token %}
+		<div class="from-group">		
+		<input class="form-control my-4" type="text"  id="username"  name="username" placeholder="Username">
+		</div>
+		<div class="from-group">		
+		<input class="form-control my-4" type="password"  id="password"  name="password" placeholder="Password">
+		</div>
+        <button id="btnFetch" type="submit" class='btn btn-primary my-4'>Sign in</button>
+        </form>		
+		{% endif %}
 	</div>
 </div>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
