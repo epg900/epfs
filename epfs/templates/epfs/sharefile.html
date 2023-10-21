@@ -33,8 +33,42 @@
         <button id="btnFetch" type="submit" class='btn btn-primary my-4'>Sign in</button>
         </form>		
 		{% endif %}
+		{% if var1 == 2 %}
+		{% if request.user.is_authenticated %} 
+			<div class="table-responsive mt-4">
+				<table class="table table-bordered table-striped table-hover" id="userTable">
+					<tr>
+					<th></th>
+					<th>File Name</th>
+					<th>Key</th>
+					<th></th>
+					</tr>
+					{% for i in filelist %}
+					<tr>
+					<td>{{i.id}}</td>
+					<!--<td><a href="{{ request.scheme }}://{{ request.get_host }}/epfs/view/{{i.keystring}}">{{i.Name}}</a></td>-->
+					<td><a href="#" onclick="showpic({{i.id}});" >{{i.Name}}</a></td>
+					<td>{{i.keystring}}</td>
+					<td><a class="btn btn-danger" href="#" onclick="window.open('/epfs/delfile?id={{i.id}}','_self');">Delete</a></td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+		{% endif %}
+		{% endif %}
 	</div>
 </div>
+
+<div class="modal modal-dialog-scrollable  bottom fade" id="canvasshowpic" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-frame modal-bottom ">
+	<div class="modal-content">
+	  <div  class="modal-body">
+		<div id="showpicimg"></div>		
+	  </div>
+	</div>
+  </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
 
@@ -48,6 +82,21 @@ if ('serviceWorker' in navigator) {
         console.log("Service worker not registered. This happened:", err)
     });
  }
+ 
+ function showpic(picid){
+		let request = new XMLHttpRequest();
+		let method = 'GET';
+		//let query = document.getElementById("searchText").value;
+		let url = '/epfs/showpic/' + picid;
+		request.open(method, url);
+		request.onload = function () {
+			let html = request.response;
+			document.getElementById("showpicimg").innerHTML = html;
+			//window.open(html,'_self');
+			$("#canvasshowpic").modal('show'); 
+		};
+		request.send();			
+	}
 /*
  $(document).ready(function() {
     $("#btnFetch").click(function() {

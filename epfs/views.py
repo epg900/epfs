@@ -23,21 +23,22 @@ def signin(request):
             user = authenticate(request, username=username, password=password)
             if user is not None :
                 login(request , user)
-                path=os.path.join(settings.BASE_DIR)
-                path=os.path.dirname(path)
-                path=os.path.join(path,'upload')
-                os.system("rm -rf {}".format(path))
-                return render(request, 'epfs/sharefile.html' , {'var1' : 0 })
+                #path=os.path.join(settings.BASE_DIR)
+                #path=os.path.dirname(path)
+                #path=os.path.join(path,'upload')
+                #os.system("rm -rf {}".format(path))
+                #return HttpResponse("<h4>All Files Deleted</h4>")
+                return redirect("/epfs/filelist")
             else:
                 return render(request, 'epfs/sharefile.html' , {'var1' : 0 })
+        return redirect("/epfs")
     #except:
     #    return render(request, 'erscipcard/login.html')
     #return render(request, 'erscipcard/login.html')
 
 def signout(request):
-    if not request.user.is_authenticated:
-        logout(request)
-        return render(request, 'epfs/sharefile.html' , {'var1' : 0 })
+    logout(request)
+    return render(request, 'epfs/sharefile.html' , {'var1' : 0 })
 
 def sharefile(request):
     if request.method == 'POST':
@@ -49,7 +50,7 @@ def sharefile(request):
             for f in files:
                 file_instance = Fileupload(Name=f,keystring=keytxt)
                 file_instance.save()                
-            keystring=request.scheme + "://" + request.META['HTTP_HOST'] + '/epfs/view/' + keytxt
+            keystring=request.scheme + "://" + request.get_host() + '/epfs/view/' + keytxt
             qrcode=pyqrcode.create(keystring)
             qrcode.svg("qrcode.svg",scale=8)
             imgfile=base64.b64encode(open("qrcode.svg","rb").read()).decode('ascii')
@@ -76,8 +77,30 @@ def downloadfile(request,link):
     response['Content-Disposition'] = 'attachment; filename={}.zip'.format(link)
     return response
 
-def removeallfile(request):    
-    return render (request,'epfs/sharefile.html', {'var1' : 1 } )
-    
 
+def filelist(request):
+    if not request.user.is_authenticated:
+        return render (request,'epfs/sharefile.html', {'var1' : 1 } )
+    filelist=Fileupload.objects.all().order_by('id')
+    return render(request, 'epfs/sharefile.html',  {'filelist' : filelist , 'var1' : 2 })
 
+def delfile(request):
+    if not request.user.is_authenticated:
+        return render (request,'epfs/sharefile.html', {'var1' : 1 } )
+    if request.method == 'GET':
+        idx = request.GET['id']
+        obj=Fileupload.objects.get(id = idx)
+        path=obj.Name.path
+        os.system("rm -rf {}".format(path))
+        Fileupload.objects.get(id = idx).delete()
+    return redirect("/epfs/filelist")
+
+def showpic(request,idx):
+    if not request.user.is_authenticated:
+        return render (request,'epfs/sharefile.html', {'var1' : 1 } )
+    keytxt=Fileupload.objects.get(id = idx).keystring
+    keystring=request.scheme + "://" + request.get_host() + '/epfs/view/' + keytxt
+    qrcode=pyqrcode.create(keystring)
+    qrcode.svg("qrcode.svg",scale=8)
+    imgfile=base64.b64encode(open("qrcode.svg","rb").read()).decode('ascii')
+    return HttpResponse("<center><h4><a href='{}'>{}</a></h4><img src='data:image/svg+xml;base64,{}' /></center>".format(keystring,keytxt,imgfile))

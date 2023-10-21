@@ -15,13 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from . import views
+from . import epfsviews
 
 urlpatterns = [
-    path('',views.index ),
-    path('sharefile/',views.sharefile),
-    path('signin/',views.signin),
-    path('logout/',views.signout),
-    path('view/<str:link>',views.downloadfile),
-    path('rm',views.removeallfile),
+    path('',epfsviews.index ),
+    path('sharefile/',epfsviews.sharefile),
+    path('signin/',epfsviews.signin),
+    path('logout/',epfsviews.signout),
+    path('view/<str:link>',epfsviews.downloadfile),
+    path('filelist/',epfsviews.filelist),
+    path('delfile/',epfsviews.delfile),
+    path('showpic/<int:idx>',epfsviews.showpic),
 ]
