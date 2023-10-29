@@ -12,11 +12,10 @@ Class-based views
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-    ####
 """
 from django.contrib import admin
 from django.urls import path,include
-from . import epfsviews
+from . import views
 
 urlpatterns = [
     path('',epfsviews.index ),
@@ -24,7 +23,9 @@ urlpatterns = [
     path('signin/',epfsviews.signin),
     path('logout/',epfsviews.signout),
     path('view/<str:link>',epfsviews.downloadfile),
+    path('viewid/<str:link>',epfsviews.downloadfileid),
     path('filelist/',epfsviews.filelist),
     path('delfile/',epfsviews.delfile),
-    path('showpic/<int:idx>',epfsviews.showpic),
+    path('delfolder/',epfsviews.delfolder),
+    path('showpic/<int:i>/<int:idx>',epfsviews.showpic),
 ]
